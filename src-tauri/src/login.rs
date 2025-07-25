@@ -1,7 +1,19 @@
-use crate::common::User;
+use crate::{common::User, storage::read::read_user_data};
+
+
+fn get_old_user_name(address: &String) -> Result<String, &'static str> {
+    let user_map = read_user_data()?;
+
+    if let Some(user) = user_map.get(address) {
+        let name = user.name();
+        return Ok(String::from(name));
+    }
+
+    Ok("".to_string())
+}
 
 #[tauri::command]
-pub fn login(address: String, name: String) -> Result<(), &'static str> {
+fn login(address: String, name: String) -> Result<(), &'static str> {
     // 1. 校验登录参数
     validate_login_args(&address, &name)?;
 
