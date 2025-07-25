@@ -1,9 +1,10 @@
 mod storage;
 mod common;
 mod login;
+mod consts;
 use log::{debug};
 use env_logger::{Builder};
-use storage::initialize;
+use storage::init;
 use std::result::Result;
 
 #[tauri::command]
@@ -28,7 +29,7 @@ pub fn run() -> Result<(), String> {
 // 进行一些初始化配置
 fn init() -> Result<(), String> {
     init_log_config();
-    initialize::init_file()?;
+    init::init_file()?;
 
     Ok(())
 }

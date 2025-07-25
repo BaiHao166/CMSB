@@ -3,6 +3,16 @@ use std::path::PathBuf;
 use std::time::Instant;
 use once_cell::sync::OnceCell;
 
+
+pub fn get_full_path(file_name: &str) -> Option<PathBuf> {
+    let Some(install_dir) = get_install_dir() else {
+        return None;
+    };
+
+    let full_path = install_dir.join(file_name);
+    Some(full_path)
+}
+
 pub fn get_install_dir() -> Option<PathBuf> {
     if let Ok(path) = env::current_exe() {
         let dir = path.parent().map(|p| p.to_path_buf());
