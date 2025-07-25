@@ -1,7 +1,7 @@
-use std::env;
+use std::{env, time::SystemTime};
 use std::path::PathBuf;
-use std::time::Instant;
 use once_cell::sync::OnceCell;
+use serde::{Deserialize, Serialize};
 
 
 pub fn get_full_path(file_name: &str) -> Option<PathBuf> {
@@ -26,11 +26,11 @@ pub fn get_install_dir() -> Option<PathBuf> {
 static CURRENT_USER: OnceCell<User> = OnceCell::new();
 
 // 记录登录用户信息
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct User {
     address: String,
     name: String,
-    login_time: Instant,
+    login_time: SystemTime,
 }
 
 impl User {
@@ -39,7 +39,7 @@ impl User {
             User {
                 address,
                 name,
-                login_time: Instant::now(),
+                login_time: SystemTime::now(),
             }
         })
     }
@@ -52,7 +52,7 @@ impl User {
         &self.name
     }
 
-    pub fn login_time(&self) -> &Instant {
+    pub fn login_time(&self) -> &SystemTime {
         &self.login_time
     }
 }
