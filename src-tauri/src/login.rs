@@ -1,10 +1,13 @@
 use crate::{common::User, storage::read::read_user_data};
 
-
-fn get_old_user_name(address: &String) -> Result<String, &'static str> {
+/**
+ * 根据钱包地址获取用过的用户名
+ */
+#[tauri::command]
+pub fn get_old_username(address: String) -> Result<String, &'static str> {
     let user_map = read_user_data()?;
 
-    if let Some(user) = user_map.get(address) {
+    if let Some(user) = user_map.get(&address) {
         let name = user.name();
         return Ok(String::from(name));
     }
@@ -12,8 +15,14 @@ fn get_old_user_name(address: &String) -> Result<String, &'static str> {
     Ok("".to_string())
 }
 
+/**
+ * 登录
+ * 1. 校验登录参数，同时校验地址在区块链上是否存在
+ * 2. 将此次登录的用户信息写入内存，以便后续代码使用
+ * 3. 将此次登录的用户信息写入文件，以便重新启动程序时使用
+ */
 #[tauri::command]
-fn login(address: String, name: String) -> Result<(), &'static str> {
+pub fn login(address: String, name: String) -> Result<(), &'static str> {
     // 1. 校验登录参数
     validate_login_args(&address, &name)?;
 
@@ -26,6 +35,9 @@ fn login(address: String, name: String) -> Result<(), &'static str> {
     Ok(())
 }
 
+/**
+ * 校验登录参数
+ */
 fn validate_login_args(address: &String, name: &String) -> Result<(), &'static str> {
     if address.is_empty() {
         return Err("地址不能为空");
@@ -38,6 +50,9 @@ fn validate_login_args(address: &String, name: &String) -> Result<(), &'static s
     Ok(())
 }
 
+/**
+ * 从区块链验证地址是否存在
+ */
 fn validate_address_exists(address: &String) -> Result<(), &'static str> {
 
     Ok(())

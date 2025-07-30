@@ -7,11 +7,6 @@ use env_logger::{Builder};
 use storage::init;
 use std::result::Result;
 
-#[tauri::command]
-fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
-}
-
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() -> Result<(), String> {
     // 进行一些初始化操作
@@ -19,11 +14,18 @@ pub fn run() -> Result<(), String> {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![greet])
+        .invoke_handler(list_export_methods())
         .run(tauri::generate_context!())
         .expect("程序启动错误");
 
     Ok(())
+}
+
+fn list_export_methods() -> impl Fn(tauri::ipc::Invoke) -> bool {
+    tauri::generate_handler![
+        login::login, 
+        login::get_old_username
+    ]
 }
 
 // 进行一些初始化配置
