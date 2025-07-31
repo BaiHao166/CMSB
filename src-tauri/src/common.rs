@@ -26,7 +26,7 @@ pub fn get_install_dir() -> Option<PathBuf> {
 static CURRENT_USER: OnceCell<User> = OnceCell::new();
 
 // 记录登录用户信息
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct User {
     address: String,
     name: String,

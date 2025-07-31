@@ -2,7 +2,7 @@ use crate::{
     common::{self, User},
     consts,
 };
-use log::{debug, error};
+use log::{error};
 use serde_json;
 use std::collections::HashMap;
 use std::fs;
@@ -17,7 +17,6 @@ pub fn read_user_data() -> Result<HashMap<String, User>, &'static str> {
         "读取用户数据文件失败"
     })?;
 
-    debug!("用户数据文件内容: {}", content);
     // 文件中没有内容（一般出现在用户刚安装且没有使用过），是正常情况，返回空的哈希表，
     if content.is_empty() {
         return Ok(HashMap::new());

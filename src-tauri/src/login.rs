@@ -1,4 +1,9 @@
-use crate::{common::User, storage::read::read_user_data};
+use log::debug;
+
+use crate::{
+    common::User,
+    storage::{read::read_user_data, write::write_user_to_disk},
+};
 
 /**
  * 根据钱包地址获取用过的用户名
@@ -30,8 +35,13 @@ pub fn login(address: String, name: String) -> Result<(), &'static str> {
     validate_address_exists(&address)?;
 
     // 3. 存储用户信息
-    User::get_or_new(address, name);
+    let user = User::get_or_new(address, name);
 
+    // 4. 写入用户到磁盘
+    write_user_to_disk(user.clone()).map_err(|e| {
+        log::error!("写入用户信息失败！: {}", e);
+        "写入用户信息失败！"
+    })?;
     Ok(())
 }
 
@@ -43,7 +53,7 @@ fn validate_login_args(address: &String, name: &String) -> Result<(), &'static s
         return Err("地址不能为空");
     }
 
-    if name.is_empty()  {
+    if name.is_empty() {
         return Err("用户名不能为空");
     }
 
@@ -54,7 +64,7 @@ fn validate_login_args(address: &String, name: &String) -> Result<(), &'static s
  * 从区块链验证地址是否存在
  */
 fn validate_address_exists(address: &String) -> Result<(), &'static str> {
-
+    debug!("正在验证地址：{}", address);
     Ok(())
 }
 
