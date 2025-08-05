@@ -24,7 +24,8 @@ pub fn run() -> Result<(), String> {
 fn list_export_methods() -> impl Fn(tauri::ipc::Invoke) -> bool {
     tauri::generate_handler![
         login::login, 
-        login::get_old_username
+        login::get_old_username,
+        login::is_login
     ]
 }
 

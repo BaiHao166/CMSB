@@ -1,9 +1,18 @@
 use log::debug;
 
 use crate::{
-    common::User,
+    common::{User, get_logined_user},
     storage::{read::read_user_data, write::write_user_to_disk},
 };
+
+#[tauri::command]
+pub fn is_login() -> Result<bool, &'static str> {
+    let Some(user) = get_logined_user() else {
+        return Ok(false);
+    };
+
+    Ok(user.is_useful_info())
+}
 
 /**
  * 根据钱包地址获取用过的用户名

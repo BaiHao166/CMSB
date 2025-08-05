@@ -25,6 +25,13 @@ pub fn get_install_dir() -> Option<PathBuf> {
 
 static CURRENT_USER: OnceCell<User> = OnceCell::new();
 
+/**
+ * 获取当前已登录的用户
+ */
+pub fn get_logined_user() -> Option<&'static User> {
+    CURRENT_USER.get()
+}
+
 // 记录登录用户信息
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct User {
@@ -54,5 +61,14 @@ impl User {
 
     pub fn login_time(&self) -> &SystemTime {
         &self.login_time
+    }
+}
+
+impl User {
+    /**
+     * 判断用户主要信息是否有效
+     */
+    pub fn is_useful_info(&self) -> bool {
+        !self.address.is_empty() && !self.name.is_empty()
     }
 }

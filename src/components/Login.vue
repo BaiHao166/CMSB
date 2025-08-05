@@ -1,0 +1,195 @@
+<script setup>
+import { ref, watch } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+import { useRoute, useRouter } from 'vue-router'
+import { setUserInfo } from "../js/store.js"
+
+const router = useRouter()
+const route = useRoute()
+
+const username = defineModel("username", { default: "" });
+const walletAddress = defineModel("walletAddress", { default: "" });
+const message = ref("");
+const errorMsg = ref("");
+
+/**
+ * 登录
+ */
+async function login() {
+    resetMsg();
+
+    await invoke(
+        "login",
+        {
+            address: walletAddress.value,
+            name: username.value
+        })
+        .then(() => {
+            setUserInfo({
+               name: username.value,
+               address: walletAddress.value
+            })
+             message.value = "登录成功！",
+             setTimeout(() => {
+                 resetMsg();
+                 router.push({name: "workspace", replace: true});
+             }, 500)
+        })
+        .catch((error) => errorMsg.value = error);
+}
+
+/**
+ * 重置提示信息
+ */
+function resetMsg() {
+    message.value = "";
+    errorMsg.value = "";
+}
+
+/**
+ * 根据钱包地址获取之前输入的用户名
+ */
+async function get_old_username() {
+    await invoke("get_old_username", { address: walletAddress.value })
+        .then((uname) => username.value = uname);
+}
+
+watch(walletAddress, async (newAddress, oldAddress) => {
+    if (newAddress == oldAddress) {
+        return;
+    }
+    resetMsg();
+    await get_old_username();
+});
+</script>
+
+<template>
+    <main class="container">
+        <h1>Welcome to CMSB</h1>
+        <p>基于Solana区块链的版权管理系统</p>
+
+        <form class="row" @submit.prevent="login">
+            <table>
+                <tbody>
+                    <tr>
+                        <td>
+                            <label for="wallet-address">address: </label>
+                        </td>
+                        <td>
+                            <input id="wallet-address" v-model="walletAddress" placeholder="输入Solana地址" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="username">nickname: </label>
+                        </td>
+                        <td>
+                            <input id="username" v-model="username" placeholder="输入昵称" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="button-td" colspan="2">
+                            <button type="submit">登录</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </form>
+        <p v-if="message">{{ message }}</p>
+        <p v-else-if="errorMsg" style="color: red;">{{ errorMsg }}</p>
+    </main>
+</template>
+
+<style scoped>
+table td {
+    text-align: right;
+    padding: 5px 2px;
+}
+
+.button-td {
+    text-align: center;
+}
+
+.container {
+    margin: 0;
+    padding-top: 10vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+
+h1 {
+    text-align: center;
+}
+
+input,
+button {
+    border-radius: 8px;
+    border: 1px solid transparent;
+    padding: 0.6em 1.2em;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: inherit;
+    color: #0f0f0f;
+    background-color: #ffffff;
+    transition: border-color 0.25s;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+button {
+    cursor: pointer;
+}
+
+button:hover {
+    border-color: #396cd8;
+}
+
+button:active {
+    border-color: #396cd8;
+    background-color: #e8e8e8;
+}
+
+input,
+button {
+    outline: none;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+}
+
+a {
+    font-weight: 500;
+    color: #646cff;
+    text-decoration: inherit;
+}
+
+a:hover {
+    color: #535bf2;
+}
+
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color: #f6f6f6;
+        background-color: #2f2f2f;
+    }
+
+    a:hover {
+        color: #24c8db;
+    }
+
+    input,
+    button {
+        color: #ffffff;
+        background-color: #0f0f0f98;
+    }
+
+    button:active {
+        background-color: #0f0f0f69;
+    }
+}
+</style>
