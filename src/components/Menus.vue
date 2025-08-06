@@ -1,23 +1,25 @@
 <script setup>
-
-function clickMenu(menu) {
-    console.log(menu)
+import { defineEmits } from "vue";
+import { menuFlag } from "../js/constants"
+const emit = defineEmits(["clickOnceMenu"]);
+function clickMenu(menuName) {
+    emit("clickOnceMenu", menuName)
 }
 </script>
 
 <template>
     <div class="side-menu">
         <ul>
-            <li @click="clickMenu('list')">
+            <li @click="clickMenu(menuFlag.list)">
                 列表
             </li>
-            <li @click="clickMenu('upload')">
+            <li @click="clickMenu(menuFlag.uploadList)">
                 上传记录
             </li>
-            <li @click="clickMenu('download')">
+            <li @click="clickMenu(menuFlag.downloadList)">
                 下载记录
             </li>
-            <li @click="clickMenu('setting')">
+            <li @click="clickMenu(menuFlag.setting)">
                 设置
             </li>
         </ul>

@@ -1,12 +1,20 @@
 <script setup>
 import UserInfo from './UserInfo.vue';
 import Menus from './Menus.vue';
+import { defineEmits } from "vue";
+
+let emit = defineEmits(["clickOnceMenu"]);
+
+function clickMenu(menuName) {
+    emit("clickOnceMenu", menuName);
+}
+
 </script>
 
 <template>
     <div class="left-area">
         <UserInfo></UserInfo>
-        <Menus></Menus>
+        <Menus @click-once-menu="clickMenu"></Menus>
     </div>
 </template>
 
